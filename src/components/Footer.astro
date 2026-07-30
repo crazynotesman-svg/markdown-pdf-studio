@@ -1,0 +1,13 @@
+---
+import { SITE } from '../site.config';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <span>© {year} {SITE.title} · 纯前端 Markdown 转 PDF 工具</span>
+    <span>
+      <a href="/blog">博客</a> · <a href="/rss.xml">RSS</a> · <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+    </span>
+  </div>
+</footer>

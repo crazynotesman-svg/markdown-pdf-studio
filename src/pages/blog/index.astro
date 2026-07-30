@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../site.config';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+function fmt(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+---
+
+<BaseLayout
+  title="博客"
+  description={`${SITE.title} 博客：Markdown、PDF、静态站点与 Cloudflare 部署的实战笔记与教程。`}
+  keywords={['Markdown 教程', 'PDF 工具', 'Cloudflare Pages', '静态站点', '技术博客 SEO']}
+  type="website"
+>
+  <div class="container">
+    <div class="blog-head">
+      <h1>博客</h1>
+      <p>关于 Markdown、PDF、静态站点与边缘部署的实战笔记。</p>
+    </div>
+
+    <div class="post-grid">
+      {
+        posts.map((post) => (
+          <a class="post-card" href={`/blog/${post.slug}/`}>
+            <h2>{post.data.title}</h2>
+            <p class="excerpt">{post.data.description}</p>
+            <div class="meta">
+              <span>{fmt(post.data.pubDate)}</span>
+              {post.data.keywords.slice(0, 3).map((k) => (
+                <span class="kw">{k}</span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

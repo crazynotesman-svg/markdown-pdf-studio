@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../site.config';
+---
+
+<BaseLayout
+  title="关于"
+  description={`关于 ${SITE.title}：一个纯前端、零上传的极简 Markdown 转 PDF 工具，开源且可自部署。`}
+  keywords={['关于 MD→PDF Studio', '开源 Markdown 工具', '隐私保护 PDF']}
+  type="website"
+>
+  <article class="article">
+    <h1>关于 MD→PDF Studio</h1>
+    <div class="prose">
+      <p>
+        <strong>MD→PDF Studio</strong> 是一个极简的在线工具：左侧写 Markdown，右侧实时预览
+        A4 打印样式，一键导出 PDF。所有处理都在你的浏览器本地完成，<strong>内容不会上传到任何服务器</strong>。
+      </p>
+      <h2>特点</h2>
+      <ul>
+        <li>实时预览：边写边看，所见即所得。</li>
+        <li>两种导出：浏览器原生打印（样式最准）+ 一键下载 PDF。</li>
+        <li>隐私优先：纯前端，零上传。</li>
+        <li>开源可自部署：源码托管在 GitHub，可一键部署到 Cloudflare Pages。</li>
+      </ul>
+      <h2>开源与部署</h2>
+      <p>
+        本项目完全开源，欢迎在
+        <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+        查看源码、提交 Issue 或自行部署。博客系统的内容直接由仓库里的 Markdown 文件驱动，
+        Push 即发布。
+      </p>
+      <p>想试试工具？<a href="/">返回首页 →</a></p>
+    </div>
+  </article>
+</BaseLayout>

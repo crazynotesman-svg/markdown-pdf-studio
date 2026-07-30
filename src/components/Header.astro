@@ -1,0 +1,23 @@
+---
+import { SITE } from '../site.config';
+const year = new Date().getFullYear();
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg class="logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="5" y="3" width="14" height="20" rx="2" fill="#2f6df6"/>
+        <rect x="13" y="9" width="14" height="20" rx="2" fill="#9cc0ff"/>
+        <path d="M8 9h7M8 13h7M8 17h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <span>{SITE.title}</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a href="/">工具</a>
+      <a href="/blog">博客</a>
+      <a href="/about">关于</a>
+      <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>

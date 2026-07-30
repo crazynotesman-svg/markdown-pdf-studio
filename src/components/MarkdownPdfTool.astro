@@ -1,0 +1,349 @@
+---
+const SAMPLE = `# Markdown 转 PDF 演示
+
+欢迎使用 **MD→PDF Studio**。在左侧输入 Markdown，右侧即可看到 A4 打印样式的实时预览。
+
+## 快速开始
+
+1. 在左侧编写 Markdown
+2. 右侧自动渲染为纸张样式
+3. 点击「打印 / 另存为 PDF」或「下载 PDF」
+
+> 提示：本工具完全在浏览器本地运行，内容不会上传到任何服务器。
+
+## 支持的语法
+
+- **加粗**、*斜体*、\`行内代码\`
+- [超链接](https://astro.build)
+- 引用块、列表、表格
+
+\`\`\`js
+function hello(name) {
+  return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+| 功能 | 说明 |
+| --- | --- |
+| 实时预览 | 边写边看 |
+| 打印导出 | 浏览器原生，样式一致 |
+| 一键下载 | html2pdf.js 生成 |
+
+---
+
+写完后，直接导出为 PDF 即可分享或归档。
+`;
+---
+
+<div class="tool" id="tool">
+  <div class="tool-toolbar">
+    <div class="tb-group">
+      <button class="btn" data-act="sample" type="button">载入示例</button>
+      <button class="btn" data-act="clear" type="button">清空</button>
+    </div>
+    <div class="tb-group">
+      <button class="btn" data-md="bold" type="button" title="加粗">B</button>
+      <button class="btn" data-md="italic" type="button" title="斜体"><i>I</i></button>
+      <button class="btn" data-md="h2" type="button" title="标题">H</button>
+      <button class="btn" data-md="list" type="button" title="列表">≡</button>
+      <button class="btn" data-md="link" type="button" title="链接">🔗</button>
+      <button class="btn" data-md="code" type="button" title="代码">{'</>'}</button>
+    </div>
+    <div class="tb-group tb-right">
+      <button class="btn" data-act="print" type="button">🖨 打印 / 另存为 PDF</button>
+      <button class="btn btn-primary" data-act="download" type="button" id="download-btn">⬇ 下载 PDF</button>
+    </div>
+  </div>
+
+  <div class="tool-split">
+    <section class="pane editor-pane">
+      <div class="pane-label">Markdown 输入</div>
+      <textarea id="md-input" spellcheck="false" aria-label="Markdown 输入"></textarea>
+    </section>
+    <section class="pane preview-pane">
+      <div class="pane-label">PDF 预览（A4）</div>
+      <div class="page-scroll">
+        <article id="pdf-page" class="pdf-page prose"></article>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style is:global>
+  .tool {
+    max-width: 1280px;
+    margin: 18px auto 0;
+    padding: 0 16px;
+  }
+  .tool-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+  }
+  .tb-group {
+    display: flex;
+    gap: 6px;
+  }
+  .tb-right {
+    margin-left: auto;
+  }
+  .tool-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    min-height: 70vh;
+  }
+  .pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .editor-pane {
+    border-right: 1px solid var(--border);
+  }
+  .pane-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-soft);
+    padding: 8px 14px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+  }
+  #md-input {
+    flex: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fff;
+    tab-size: 2;
+  }
+  .preview-pane {
+    background: var(--bg-page);
+  }
+  .page-scroll {
+    flex: 1;
+    overflow: auto;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .pdf-page {
+    width: 794px;
+    min-height: 1123px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    padding: 56px 64px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 860px) {
+    .tool-split {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .editor-pane {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    #md-input {
+      min-height: 240px;
+    }
+    .pdf-page {
+      width: 100%;
+      min-height: auto;
+      padding: 32px;
+    }
+    .tb-right {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+
+  /* ---------- 打印：仅输出 PDF 页面 ---------- */
+  @media print {
+    .site-header,
+    .site-footer,
+    .hero,
+    .tag-row,
+    .tool-toolbar,
+    .editor-pane,
+    .pane-label,
+    .back-link {
+      display: none !important;
+    }
+    body {
+      background: #fff;
+    }
+    .tool,
+    .tool-split,
+    .preview-pane,
+    .page-scroll {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: #fff !important;
+      overflow: visible !important;
+      max-width: none !important;
+    }
+    .pdf-page {
+      width: auto !important;
+      min-height: auto !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+  }
+</style>
+
+<script>
+  import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
+
+  const input = document.getElementById('md-input') as HTMLTextAreaElement;
+  const page = document.getElementById('pdf-page') as HTMLElement;
+  const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
+
+  marked.setOptions({ gfm: true, breaks: true });
+
+  const SAMPLE = `# Markdown 转 PDF 演示
+
+欢迎使用 **MD→PDF Studio**。在左侧输入 Markdown，右侧即可看到 A4 打印样式的实时预览。
+
+## 快速开始
+
+1. 在左侧编写 Markdown
+2. 右侧自动渲染为纸张样式
+3. 点击「打印 / 另存为 PDF」或「下载 PDF」
+
+> 提示：本工具完全在浏览器本地运行，内容不会上传到任何服务器。
+
+## 支持的语法
+
+- **加粗**、*斜体*、\`行内代码\`
+- [超链接](https://astro.build)
+- 引用块、列表、表格
+
+\`\`\`js
+function hello(name) {
+  return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+| 功能 | 说明 |
+| --- | --- |
+| 实时预览 | 边写边看 |
+| 打印导出 | 浏览器原生，样式一致 |
+| 一键下载 | html2pdf.js 生成 |
+
+---
+
+写完后，直接导出为 PDF 即可分享或归档。
+`;
+
+  function render() {
+    const raw = marked.parse(input.value || '');
+    page.innerHTML = DOMPurify.sanitize(raw as string);
+  }
+
+  function surround(before: string, after: string, placeholder: string) {
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const selected = input.value.slice(start, end) || placeholder;
+    const text = before + selected + after;
+    input.setRangeText(text, start, end, 'end');
+    input.focus();
+    render();
+  }
+
+  function insertAtCursor(text: string) {
+    const start = input.selectionStart;
+    input.setRangeText(text, start, input.selectionEnd, 'end');
+    input.focus();
+    render();
+  }
+
+  function downloadPdf() {
+    return import('https://esm.sh/html2pdf.js@0.10.2').then((mod) => {
+      const html2pdf = mod.default;
+      return html2pdf()
+        .set({
+          margin: 10,
+          filename: 'markdown.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['css', 'legacy'] },
+        })
+        .from(page)
+        .save();
+    });
+  }
+
+  // 工具栏事件
+  document.getElementById('tool')?.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null;
+    if (!el) return;
+    const act = el.dataset.act;
+    const md = el.dataset.md;
+
+    if (act === 'sample') {
+      input.value = SAMPLE;
+      render();
+    } else if (act === 'clear') {
+      input.value = '';
+      render();
+    } else if (act === 'print') {
+      window.print();
+    } else if (act === 'download') {
+      el.disabled = true;
+      const old = el.textContent;
+      el.textContent = '生成中…';
+      downloadPdf()
+        .catch((err) => {
+          alert('PDF 生成失败：' + (err?.message || err) + '\n可改用「打印 / 另存为 PDF」按钮导出。');
+        })
+        .finally(() => {
+          el.disabled = false;
+          el.textContent = old;
+        });
+    } else if (md === 'bold') {
+      surround('**', '**', '加粗文字');
+    } else if (md === 'italic') {
+      surround('*', '*', '斜体');
+    } else if (md === 'code') {
+      surround('`', '`', 'code');
+    } else if (md === 'link') {
+      surround('[', '](https://)', '链接文字');
+    } else if (md === 'h2') {
+      insertAtCursor('\n## 标题\n');
+    } else if (md === 'list') {
+      insertAtCursor('\n- 列表项\n');
+    }
+  });
+
+  input.addEventListener('input', render);
+
+  // 初始内容
+  input.value = SAMPLE;
+  render();
+</script>
