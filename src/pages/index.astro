@@ -2,50 +2,58 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MarkdownPdfTool from '../components/MarkdownPdfTool.astro';
 import { SITE } from '../site.config';
+import { t } from '../i18n/translations';
 
-const keywords = [
-  'Markdown 转 PDF',
-  '在线 Markdown 编辑器',
-  'PDF 导出工具',
-  '极简写作工具',
-  '纯前端隐私保护',
-];
-
-const appJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: SITE.title,
-  applicationCategory: 'UtilitiesApplication',
-  operatingSystem: 'Web',
-  url: SITE.url,
-  description: SITE.description,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '5',
-    ratingCount: '1',
-  },
-};
+const keywords = t('home.keywords').split(',').map((k) => k.trim());
+const tags = keywords;
 ---
 
 <BaseLayout
-  title="Markdown 转 PDF 在线工具"
+  title="Markdown to PDF Online Tool"
   description={SITE.description}
   keywords={keywords}
   type="website"
 >
-  <script type="application/ld+json" set:html={JSON.stringify(appJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: SITE.title,
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Web',
+    url: SITE.url,
+    description: SITE.description,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    aggregateRating: { '@type': 'AggregateRating', ratingValue: '5', ratingCount: '1' },
+  })} />
 
   <section class="hero">
-    <h1>极简 Markdown 转 PDF 工具</h1>
-    <p>
-      左侧书写 Markdown，右侧实时预览 A4 打印样式，一键导出 PDF。
-      纯前端运行，内容不上传，安全又隐私。
+    <h1 data-i18n="home.heroTitle">Minimal Markdown to PDF</h1>
+    <p data-i18n="home.heroDesc">
+      Write Markdown on the left, preview the A4 print layout on the right, and export to PDF in one
+      click. Everything runs in your browser — nothing is uploaded, fully private.
     </p>
-    <div class="tag-row">
-      {keywords.map((k) => <span class="tag">{k}</span>)}
+    <div class="tag-row" id="tag-row">
+      {tags.map((k) => <span class="tag">{k}</span>)}
     </div>
   </section>
 
   <MarkdownPdfTool />
 </BaseLayout>
+
+<script>
+  import { t } from '../i18n/translations';
+  function renderTags() {
+    const row = document.getElementById('tag-row');
+    if (!row) return;
+    row.innerHTML = t('home.keywords')
+      .split(',')
+      .map((k) => `<span class="tag">${k.trim()}</span>`)
+      .join('');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderTags);
+  } else {
+    renderTags();
+  }
+  document.addEventListener('langchange', renderTags);
+</script>

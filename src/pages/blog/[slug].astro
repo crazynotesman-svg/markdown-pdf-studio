@@ -29,10 +29,10 @@ function fmt(d: Date) {
   image={post.data.heroImage}
 >
   <article class="article">
-    <a class="back-link" href="/blog">← 返回博客</a>
+    <a class="back-link" href="/blog" data-i18n="blog.back">← Back to blog</a>
     <div class="post-meta">
       <span>{fmt(post.data.pubDate)}</span>
-      <span>· {post.data.author}</span>
+      <span>· <span data-i18n="blog.by">by</span> {post.data.author}</span>
       {post.data.tags.map((t) => <span>· #{t}</span>)}
     </div>
     <h1>{post.data.title}</h1>

@@ -1,67 +1,34 @@
 ---
-const SAMPLE = `# Markdown 转 PDF 演示
-
-欢迎使用 **MD→PDF Studio**。在左侧输入 Markdown，右侧即可看到 A4 打印样式的实时预览。
-
-## 快速开始
-
-1. 在左侧编写 Markdown
-2. 右侧自动渲染为纸张样式
-3. 点击「打印 / 另存为 PDF」或「下载 PDF」
-
-> 提示：本工具完全在浏览器本地运行，内容不会上传到任何服务器。
-
-## 支持的语法
-
-- **加粗**、*斜体*、\`行内代码\`
-- [超链接](https://astro.build)
-- 引用块、列表、表格
-
-\`\`\`js
-function hello(name) {
-  return \`Hello, \${name}!\`;
-}
-\`\`\`
-
-| 功能 | 说明 |
-| --- | --- |
-| 实时预览 | 边写边看 |
-| 打印导出 | 浏览器原生，样式一致 |
-| 一键下载 | html2pdf.js 生成 |
-
----
-
-写完后，直接导出为 PDF 即可分享或归档。
-`;
+// 注意：示例 Markdown 文案来自 src/i18n/translations.ts 的 tool.sample（按语言切换）
 ---
 
 <div class="tool" id="tool">
   <div class="tool-toolbar">
     <div class="tb-group">
-      <button class="btn" data-act="sample" type="button">载入示例</button>
-      <button class="btn" data-act="clear" type="button">清空</button>
+      <button class="btn" data-act="sample" type="button" data-i18n="tool.loadSample">Load sample</button>
+      <button class="btn" data-act="clear" type="button" data-i18n="tool.clear">Clear</button>
     </div>
     <div class="tb-group">
-      <button class="btn" data-md="bold" type="button" title="加粗">B</button>
-      <button class="btn" data-md="italic" type="button" title="斜体"><i>I</i></button>
-      <button class="btn" data-md="h2" type="button" title="标题">H</button>
-      <button class="btn" data-md="list" type="button" title="列表">≡</button>
-      <button class="btn" data-md="link" type="button" title="链接">🔗</button>
-      <button class="btn" data-md="code" type="button" title="代码">{'</>'}</button>
+      <button class="btn" data-md="bold" type="button" data-i18n-attr="title:tool.bold" title="Bold">B</button>
+      <button class="btn" data-md="italic" type="button" data-i18n-attr="title:tool.italic" title="Italic"><i>I</i></button>
+      <button class="btn" data-md="h2" type="button" data-i18n-attr="title:tool.heading" title="Heading">H</button>
+      <button class="btn" data-md="list" type="button" data-i18n-attr="title:tool.list" title="List">≡</button>
+      <button class="btn" data-md="link" type="button" data-i18n-attr="title:tool.link" title="Link">🔗</button>
+      <button class="btn" data-md="code" type="button" data-i18n-attr="title:tool.code" title="Code">{'</>'}</button>
     </div>
     <div class="tb-group tb-right">
-      <button class="btn" data-act="print" type="button">🖨 打印 / 另存为 PDF</button>
-      <button class="btn btn-primary" data-act="download" type="button" id="download-btn">⬇ 下载 PDF</button>
+      <button class="btn" data-act="print" type="button"><span class="ico">🖨</span> <span data-i18n="tool.print">Print / Save as PDF</span></button>
+      <button class="btn btn-primary" data-act="download" type="button" id="download-btn"><span class="ico">⬇</span> <span data-i18n="tool.download">Download PDF</span></button>
     </div>
   </div>
 
   <div class="tool-split">
     <section class="pane editor-pane">
-      <div class="pane-label">Markdown 输入</div>
-      <textarea id="md-input" spellcheck="false" aria-label="Markdown 输入"></textarea>
+      <div class="pane-label" data-i18n="tool.inputLabel">Markdown input</div>
+      <textarea id="md-input" spellcheck="false" data-i18n-attr="aria-label:tool.inputLabel;placeholder:tool.inputPlaceholder" aria-label="Markdown input" placeholder="Write your Markdown here…"></textarea>
     </section>
     <section class="pane preview-pane">
-      <div class="pane-label">PDF 预览（A4）</div>
+      <div class="pane-label" data-i18n="tool.previewLabel">PDF preview (A4)</div>
       <div class="page-scroll">
         <article id="pdf-page" class="pdf-page prose"></article>
       </div>
@@ -183,7 +150,8 @@ function hello(name) {
     .tool-toolbar,
     .editor-pane,
     .pane-label,
-    .back-link {
+    .back-link,
+    .lang-select {
       display: none !important;
     }
     body {
@@ -218,6 +186,7 @@ function hello(name) {
 <script>
   import { marked } from 'marked';
   import DOMPurify from 'dompurify';
+  import { t, getLang, translations, type LangCode } from '../i18n/translations';
 
   const input = document.getElementById('md-input') as HTMLTextAreaElement;
   const page = document.getElementById('pdf-page') as HTMLElement;
@@ -225,40 +194,11 @@ function hello(name) {
 
   marked.setOptions({ gfm: true, breaks: true });
 
-  const SAMPLE = `# Markdown 转 PDF 演示
+  let loadedSampleLang: LangCode = getLang();
 
-欢迎使用 **MD→PDF Studio**。在左侧输入 Markdown，右侧即可看到 A4 打印样式的实时预览。
-
-## 快速开始
-
-1. 在左侧编写 Markdown
-2. 右侧自动渲染为纸张样式
-3. 点击「打印 / 另存为 PDF」或「下载 PDF」
-
-> 提示：本工具完全在浏览器本地运行，内容不会上传到任何服务器。
-
-## 支持的语法
-
-- **加粗**、*斜体*、\`行内代码\`
-- [超链接](https://astro.build)
-- 引用块、列表、表格
-
-\`\`\`js
-function hello(name) {
-  return \`Hello, \${name}!\`;
-}
-\`\`\`
-
-| 功能 | 说明 |
-| --- | --- |
-| 实时预览 | 边写边看 |
-| 打印导出 | 浏览器原生，样式一致 |
-| 一键下载 | html2pdf.js 生成 |
-
----
-
-写完后，直接导出为 PDF 即可分享或归档。
-`;
+  function currentSample(): string {
+    return t('tool.sample');
+  }
 
   function render() {
     const raw = marked.parse(input.value || '');
@@ -307,7 +247,8 @@ function hello(name) {
     const md = el.dataset.md;
 
     if (act === 'sample') {
-      input.value = SAMPLE;
+      input.value = currentSample();
+      loadedSampleLang = getLang();
       render();
     } else if (act === 'clear') {
       input.value = '';
@@ -316,34 +257,47 @@ function hello(name) {
       window.print();
     } else if (act === 'download') {
       el.disabled = true;
-      const old = el.textContent;
-      el.textContent = '生成中…';
+      const label = el.querySelector('[data-i18n]') as HTMLElement;
+      const old = label.textContent;
+      label.textContent = t('tool.generating');
       downloadPdf()
         .catch((err) => {
-          alert('PDF 生成失败：' + (err?.message || err) + '\n可改用「打印 / 另存为 PDF」按钮导出。');
+          alert(t('tool.downloadError').replace('{msg}', err?.message || String(err)));
         })
         .finally(() => {
           el.disabled = false;
-          el.textContent = old;
+          label.textContent = old;
         });
     } else if (md === 'bold') {
-      surround('**', '**', '加粗文字');
+      surround('**', '**', t('tool.bold'));
     } else if (md === 'italic') {
-      surround('*', '*', '斜体');
+      surround('*', '*', t('tool.italic'));
     } else if (md === 'code') {
-      surround('`', '`', 'code');
+      surround('`', '`', t('tool.code'));
     } else if (md === 'link') {
-      surround('[', '](https://)', '链接文字');
+      surround('[', '](https://)', t('tool.link'));
     } else if (md === 'h2') {
-      insertAtCursor('\n## 标题\n');
+      insertAtCursor('\n## ' + t('tool.heading') + '\n');
     } else if (md === 'list') {
-      insertAtCursor('\n- 列表项\n');
+      insertAtCursor('\n- ' + t('tool.list') + '\n');
     }
   });
 
   input.addEventListener('input', render);
 
   // 初始内容
-  input.value = SAMPLE;
+  input.value = currentSample();
+  loadedSampleLang = getLang();
   render();
+
+  // 切换语言时：若编辑器内容仍是“某语言示例”，则同步为新语言示例；否则保留用户内容
+  document.addEventListener('langchange', (e: CustomEvent<{ lang: LangCode }>) => {
+    const lang = e.detail.lang;
+    const prevSample = translations[loadedSampleLang]?.['tool.sample'];
+    if (prevSample != null && input.value === prevSample) {
+      input.value = t('tool.sample', lang);
+      render();
+    }
+    loadedSampleLang = lang;
+  });
 </script>

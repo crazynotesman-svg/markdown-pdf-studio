@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../site.config';
+import { LANGS } from '../i18n/translations';
 const year = new Date().getFullYear();
 ---
 
@@ -14,10 +15,13 @@ const year = new Date().getFullYear();
       <span>{SITE.title}</span>
     </a>
     <nav class="nav" aria-label="主导航">
-      <a href="/">工具</a>
-      <a href="/blog">博客</a>
-      <a href="/about">关于</a>
-      <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+      <a href="/" data-i18n="nav.tool">Tool</a>
+      <a href="/blog" data-i18n="nav.blog">Blog</a>
+      <a href="/about" data-i18n="nav.about">About</a>
+      <a href={SITE.github} target="_blank" rel="noopener" data-i18n="nav.github">GitHub</a>
+      <select id="lang-select" class="lang-select" data-i18n-attr="aria-label:lang.selectLabel" aria-label="Language">
+        {LANGS.map((l) => <option value={l.code}>{l.label}</option>)}
+      </select>
     </nav>
   </div>
 </header>

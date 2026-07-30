@@ -28,7 +28,7 @@ const {
   noindex = false,
 } = Astro.props;
 
-const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} · 极简 Markdown 转 PDF 在线工具`;
+const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} · Minimal Markdown to PDF tool`;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogImage = image ? new URL(image, SITE.url).href : new URL('/og-default.svg', SITE.url).href;
 
@@ -55,7 +55,7 @@ if (type === 'article') {
 ---
 
 <!doctype html>
-<html lang={SITE.locale}>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -86,6 +86,9 @@ if (type === 'article') {
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script>
+      import '../scripts/i18n.ts';
+    </script>
   </head>
   <body>
     <Header />

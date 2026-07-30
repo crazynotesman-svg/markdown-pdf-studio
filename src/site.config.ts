@@ -6,7 +6,8 @@ export const SITE = {
     '极简的 Markdown 转 PDF 在线工具：左侧写 Markdown，右侧实时预览 A4 打印样式，一键导出 PDF。纯前端、零上传、保护隐私。',
   author: 'MD→PDF Studio',
   github: 'https://github.com/crazynotesman-svg/markdown-pdf-studio',
-  locale: 'zh-CN',
+  email: 'babong@163.com', // 站点联系方式
+  locale: 'en', // 默认语言（英语）；界面支持 10 种语言切换，见 src/i18n/translations.ts
 };
 
 export type SiteConfig = typeof SITE;

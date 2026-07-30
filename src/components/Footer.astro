@@ -5,9 +5,12 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="container">
-    <span>© {year} {SITE.title} · 纯前端 Markdown 转 PDF 工具</span>
-    <span>
-      <a href="/blog">博客</a> · <a href="/rss.xml">RSS</a> · <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+    <span data-i18n="footer.copy">© {year} MD→PDF Studio · Pure-frontend Markdown to PDF tool</span>
+    <span class="footer-links">
+      <a href="/blog" data-i18n="footer.blog">Blog</a> ·
+      <a href="/rss.xml">RSS</a> ·
+      <a href={SITE.github} target="_blank" rel="noopener" data-i18n="footer.github">GitHub</a> ·
+      <a href={`mailto:${SITE.email}`} data-i18n="footer.contact">Contact</a>
     </span>
   </div>
 </footer>
