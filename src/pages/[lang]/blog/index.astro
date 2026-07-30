@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t, LANGS, DEFAULT_LANG, type LangCode } from '../../../i18n/translations';
+import { blogPostUrl, indexAlternates } from '../../../utils/blog-i18n';
+
+export async function getStaticPaths() {
+  const nonDefault = LANGS.filter((l) => l.code !== DEFAULT_LANG);
+  return nonDefault.map((l) => ({ params: { lang: l.code } }));
+}
+
+const lang = Astro.params.lang as LangCode;
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === lang)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const alternates = indexAlternates();
+
+function fmt(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+---
+
+<BaseLayout
+  title={t('blog.title', lang)}
+  description={t('blog.subtitle', lang)}
+  keywords={['Markdown', 'PDF', 'Cloudflare Pages', 'Static sites', 'Tech blog SEO']}
+  type="website"
+  htmlLang={lang}
+  alternates={alternates}
+>
+  <div class="container" data-blog-index>
+    <div class="blog-head">
+      <h1>{t('blog.title', lang)}</h1>
+      <p>{t('blog.subtitle', lang)}</p>
+    </div>
+
+    <div class="post-grid">
+      {
+        posts.map((post) => (
+          <a class="post-card" href={blogPostUrl(lang, post.data.canonical)}>
+            <h2>{post.data.title}</h2>
+            <p class="excerpt">{post.data.description}</p>
+            <div class="meta">
+              <span>{t('blog.published', lang)} {fmt(post.data.pubDate)}</span>
+              {post.data.keywords.slice(0, 3).map((k) => (
+                <span class="kw">{k}</span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

@@ -14,6 +14,10 @@ export interface Props {
   modifiedTime?: Date;
   author?: string;
   noindex?: boolean;
+  // 多语言博客：当前页面语言（影响 <html lang> 与 og:locale）
+  htmlLang?: string;
+  // hreflang 交替链接（每个语言一条；x-default 由 DEFAULT_LANG 自动生成）
+  alternates?: { lang: string; href: string }[];
 }
 
 const {
@@ -26,11 +30,29 @@ const {
   modifiedTime,
   author = SITE.author,
   noindex = false,
+  htmlLang = SITE.locale,
+  alternates = [],
 } = Astro.props;
 
 const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} · Minimal Markdown to PDF tool`;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogImage = image ? new URL(image, SITE.url).href : new URL('/og-default.svg', SITE.url).href;
+
+// lang 代码 → Open Graph locale（如 en → en_US）
+const OG_LOCALE: Record<string, string> = {
+  en: 'en_US',
+  es: 'es_ES',
+  'zh-CN': 'zh_CN',
+  'zh-TW': 'zh_TW',
+  pt: 'pt_BR',
+  fr: 'fr_FR',
+  de: 'de_DE',
+  ja: 'ja_JP',
+  ru: 'ru_RU',
+  ko: 'ko_KR',
+};
+const ogLocale = OG_LOCALE[htmlLang] ?? htmlLang;
+const xDefaultHref = alternates.find((a) => a.lang === 'en')?.href ?? canonical;
 
 const jsonLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
@@ -49,13 +71,14 @@ if (type === 'article') {
   jsonLd['dateModified'] = (modifiedTime ?? publishedTime)?.toISOString();
   jsonLd['author'] = { '@type': 'Person', name: author };
   jsonLd['keywords'] = keywords.join(', ');
+  jsonLd['inLanguage'] = htmlLang;
   jsonLd['mainEntityOfPage'] = canonical;
   if (image) jsonLd['image'] = ogImage;
 }
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -64,6 +87,11 @@ if (type === 'article') {
     {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
+
+    <!-- hreflang 多语言交替链接 -->
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={xDefaultHref} />}
+
     <meta name="theme-color" content="#2f6df6" />
 
     <!-- Open Graph -->
@@ -72,7 +100,7 @@ if (type === 'article') {
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:image" content={ogImage} />
 
     <!-- Twitter -->

@@ -1,0 +1,61 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t, LANGS, DEFAULT_LANG, type LangCode } from '../../../i18n/translations';
+import { blogPostUrl, postAlternates } from '../../../utils/blog-i18n';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const canonicals = [...new Set(posts.map((p) => p.data.canonical))];
+  const paths: { params: { lang: string; slug: string }; props: { post: CollectionEntry<'blog'> } }[] = [];
+  for (const c of canonicals) {
+    for (const l of LANGS) {
+      if (l.code === DEFAULT_LANG) continue;
+      const post = posts.find((p) => p.data.canonical === c && p.data.lang === l.code);
+      if (!post) continue;
+      paths.push({ params: { lang: l.code, slug: c }, props: { post } });
+    }
+  }
+  return paths;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const lang = post.data.lang as LangCode;
+const canonical = post.data.canonical;
+const alternates = postAlternates(canonical);
+const backHref = `/${lang}/blog`;
+
+function fmt(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  keywords={post.data.keywords}
+  type="article"
+  publishedTime={post.data.pubDate}
+  modifiedTime={post.data.updatedDate ?? post.data.pubDate}
+  author={post.data.author}
+  image={post.data.heroImage}
+  htmlLang={lang}
+  alternates={alternates}
+>
+  <article class="article" data-blog-canonical={canonical}>
+    <a class="back-link" href={backHref}>{t('blog.back', lang)}</a>
+    <div class="post-meta">
+      <span>{fmt(post.data.pubDate)}</span>
+      <span>· {t('blog.by', lang)} {post.data.author}</span>
+      {post.data.tags.map((t) => <span>· #{t}</span>)}
+    </div>
+    <h1>{post.data.title}</h1>
+    <div class="keywords">
+      {post.data.keywords.map((k) => <span class="kw">{k}</span>)}
+    </div>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

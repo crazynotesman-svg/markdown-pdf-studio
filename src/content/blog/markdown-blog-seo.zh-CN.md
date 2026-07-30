@@ -5,6 +5,8 @@ pubDate: 2026-07-25
 tags: ["博客", "SEO", "静态站点"]
 keywords: ["Markdown 博客", "技术博客 SEO", "静态站点生成器", "Astro 博客", "站点地图 sitemap", "结构化数据 JSON-LD"]
 author: "MD→PDF Studio"
+lang: zh-CN
+canonical: markdown-blog-seo
 ---
 
 # 用 Markdown 写技术博客并优化 SEO

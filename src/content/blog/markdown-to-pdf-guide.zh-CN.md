@@ -5,6 +5,8 @@ pubDate: 2026-07-28
 tags: ["Markdown", "PDF", "教程"]
 keywords: ["Markdown 转 PDF", "在线 Markdown 转 PDF 工具", "Markdown 转 PDF 原理", "浏览器打印 PDF", "免费 PDF 导出"]
 author: "MD→PDF Studio"
+lang: zh-CN
+canonical: markdown-to-pdf-guide
 ---
 
 # Markdown 转 PDF 完全指南

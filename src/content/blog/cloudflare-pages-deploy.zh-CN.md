@@ -5,6 +5,8 @@ pubDate: 2026-07-20
 tags: ["部署", "Cloudflare", "DevOps"]
 keywords: ["Cloudflare Pages 部署", "静态网站托管", "GitHub 关联 Cloudflare", "免费静态托管", "边缘网络 CDN", "Pages 自定义域名"]
 author: "MD→PDF Studio"
+lang: zh-CN
+canonical: cloudflare-pages-deploy
 ---
 
 # 用 Cloudflare Pages 零成本部署静态网站

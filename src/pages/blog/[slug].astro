@@ -1,17 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { blogPostUrl, postAlternates } from '../../utils/blog-i18n';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en');
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.data.canonical },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
 const { Content } = await post.render();
+const canonical = post.data.canonical;
+const alternates = postAlternates(canonical);
 
 function fmt(d: Date) {
   return d.toISOString().slice(0, 10);
@@ -27,8 +30,10 @@ function fmt(d: Date) {
   modifiedTime={post.data.updatedDate ?? post.data.pubDate}
   author={post.data.author}
   image={post.data.heroImage}
+  htmlLang="en"
+  alternates={alternates}
 >
-  <article class="article">
+  <article class="article" data-blog-canonical={canonical}>
     <a class="back-link" href="/blog" data-i18n="blog.back">← Back to blog</a>
     <div class="post-meta">
       <span>{fmt(post.data.pubDate)}</span>

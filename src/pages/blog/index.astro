@@ -2,23 +2,28 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE } from '../../site.config';
+import { t } from '../../i18n/translations';
+import { indexAlternates, blogPostUrl } from '../../utils/blog-i18n';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
 function fmt(d: Date) {
   return d.toISOString().slice(0, 10);
 }
+const alternates = indexAlternates();
 ---
 
 <BaseLayout
-  title="Blog"
-  description="MD→PDF Studio blog: practical notes and tutorials on Markdown, PDF, static sites, and Cloudflare deployment."
+  title={t('blog.title', 'en')}
+  description={t('blog.subtitle', 'en')}
   keywords={['Markdown tutorial', 'PDF tools', 'Cloudflare Pages', 'Static sites', 'Tech blog SEO']}
   type="website"
+  htmlLang="en"
+  alternates={alternates}
 >
-  <div class="container">
+  <div class="container" data-blog-index>
     <div class="blog-head">
       <h1 data-i18n="blog.title">Blog</h1>
       <p data-i18n="blog.subtitle">Practical notes on Markdown, PDF, static sites, and edge deployment.</p>
@@ -27,7 +32,7 @@ function fmt(d: Date) {
     <div class="post-grid">
       {
         posts.map((post) => (
-          <a class="post-card" href={`/blog/${post.slug}/`}>
+          <a class="post-card" href={blogPostUrl('en', post.data.canonical)}>
             <h2>{post.data.title}</h2>
             <p class="excerpt">{post.data.description}</p>
             <div class="meta">

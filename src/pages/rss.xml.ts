@@ -1,9 +1,10 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '../site.config';
+import { blogPostUrl } from '../utils/blog-i18n';
 
 export async function GET(context: { site: URL }) {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en');
   return rss({
     title: SITE.title,
     description: SITE.description,
@@ -14,7 +15,7 @@ export async function GET(context: { site: URL }) {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.pubDate,
-        link: `/blog/${post.slug}/`,
+        link: blogPostUrl('en', post.data.canonical),
         categories: post.data.keywords,
       })),
   });
