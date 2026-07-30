@@ -50,4 +50,4 @@ pubDate: 2026-07-25
 
 这种「内容即代码」的方式，让技术博客既好写、又好维护。
 
-> 本博客本身就用这套方案构建，源码可在 [GitHub](https://github.com/your-name/markdown-pdf-studio) 查看。
+> 本博客本身就用这套方案构建，源码可在 [GitHub](https://github.com/crazynotesman-svg/markdown-pdf-studio) 查看。

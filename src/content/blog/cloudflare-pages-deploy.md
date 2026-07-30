@@ -25,7 +25,7 @@ Cloudflare Pages 提供免费的静态托管 + 全球 CDN，且与 GitHub 深度
 git init
 git add -A
 git commit -m "init"
-git remote add origin https://github.com/your-name/your-repo.git
+git remote add origin https://github.com/crazynotesman-svg/markdown-pdf-studio.git
 git push -u origin main
 ```
 
